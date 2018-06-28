@@ -1,2 +1,1 @@
-Change 1
-Change 2
+These are the Android codes I have written, both for practice and purpose.

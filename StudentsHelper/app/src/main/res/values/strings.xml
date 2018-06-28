@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">SXC Students\' Helper </string>
+    <string name="line_1">St. Xavier\'s College (Autonomous), Kolkata</string>
+    <string name="line_2">Established in 1860</string>
+    <string name="line_3">Autonomous College (2006), College with Potential for Excellence (2006),</string>
+    <string name="line_4">College of Excellence (2014), Heritage College (2015)</string>
+    <string name="footer1">Vision \u0026 Mission</string>
+    <string name="authentication">Authentication Required:</string>
+    <string name="cin">ENTER CIN : </string>
+    <string name="password">ENTER PASSWORD : </string>
+    <string name="submit">LOGIN</string>
+    <string name="attendance">ATTENDANCE</string>
+    <string name="check">CHECK</string>
+    <string name="marks">MARKS</string>
+    <string name="notice">NOTICEBOARD</string>
+    <string name="fees">PAYMENT OF FEES</string>
+    <string name="library">ONLINE LIBRARY</string>
+    <string name="launch">COLLEGE APP</string>
+    <string name="login">LOG IN</string>
+    <string name="sign_up">SIGN UP</string>
+    <string name="close">EXIT</string>
+    <string name="confirm">CONFIRM PASSWORD : </string>
+    <string name="register"><u>REGISTER AS STUDENT</u></string>
+    <string name="forgot"><u>FORGOT PASSWORD ?</u></string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <string name="name">Soumodeep Dutta</string>
+    <string name="course">BSC Computer Science Hons</string>
+    <string name="roll">513</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+</resources>

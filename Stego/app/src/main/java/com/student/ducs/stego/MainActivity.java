@@ -21,9 +21,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         b8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveImageToExternalStorage(operation);
+                storeImage(operation);
             }
         });
 
@@ -256,35 +259,34 @@ public class MainActivity extends AppCompatActivity {
         return scaledBitmap;
     }
 
-    public final static String APP_PATH_SD_CARD = "Stego";
-    public final static String APP_THUMBNAIL_PATH_SD_CARD = "thumbnails";
-
-    public boolean saveImageToExternalStorage(Bitmap image) {
-        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + APP_PATH_SD_CARD + APP_THUMBNAIL_PATH_SD_CARD;
-
-        try {
-            File dir = new File(fullPath);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            OutputStream fOut = null;
-            File file = new File(fullPath, "desiredFilename.png");
-            file.createNewFile();
-            fOut = new FileOutputStream(file);
-
-// 100 means no compression, the lower you go, the stronger the compression
-            image.compress(Bitmap.CompressFormat.PNG, 100, fOut);
-            fOut.flush();
-            fOut.close();
-
-            MediaStore.Images.Media.insertImage(this.getContentResolver(), file.getAbsolutePath(), file.getName(), file.getName());
-
-            return true;
-
-        } catch (Exception e) {
-            Log.e("saveToExternalStorage()", e.getMessage());
-            return false;
+    private void storeImage(Bitmap image){
+        File pictureFile=getOutputMediaFile();
+        if(pictureFile==null){
+            Log.d(TAG,"Error creating media file, check storage permissions: ");
+            return;
         }
+        try{
+            FileOutputStream fos=new FileOutputStream(pictureFile);
+            image.compress(Bitmap.CompressFormat.PNG,100,fos);
+            fos.close();
+        }catch (FileNotFoundException e){
+            Log.d(TAG,"File not found: "+e.getMessage());
+        }catch (IOException e){
+            Log.d(TAG,"Error accesing file: "+e.getMessage());
+        }
+    }
+
+    private File getOutputMediaFile(){
+        File mediaStorageDir=new File(Environment.getExternalStorageDirectory()+"/Android/data/"+getApplicationContext().getPackageName()+"/Files");
+        if(!mediaStorageDir.exists()){
+            if(!mediaStorageDir.mkdirs()){
+                return null;
+            }
+        }
+        String timeStamp=new SimpleDateFormat("ddMMyyyy_HHmm").format(new Date());
+        File mediaFile;
+        String mImageName="MI_"+timeStamp+".jpg";
+        mediaFile=new File(mediaStorageDir.getPath()+File.separator+mImageName);
+        return mediaFile;
     }
 }

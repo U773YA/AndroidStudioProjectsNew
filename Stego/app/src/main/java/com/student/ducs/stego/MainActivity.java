@@ -1,7 +1,6 @@
 package com.student.ducs.stego;
 
 import android.app.ProgressDialog;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -10,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -18,7 +18,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -61,23 +60,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void gray(View view) {
-        load = ProgressDialog.show(MainActivity.this, "", "loading");
-        load.setCancelable(true);
-        operation = Bitmap.createBitmap(bmp.getWidth(), bmp.getHeight(), bmp.getConfig());
-        double red = 0.2989;
-        double green = 0.587;
-        double blue = 0.114;
-
-        for (int i = 0; i < bmp.getWidth(); i++) {
-            for (int j = 0; j < bmp.getHeight(); j++) {
-                int p = bmp.getPixel(i, j);
-                int r = Color.red(p);
-                int g = Color.green(p);
-                int b = Color.blue(p);
-                int x = (int) (red * r + green * g + blue * b);
-                operation.setPixel(i, j, Color.argb(Color.alpha(p), x, x, x));
-            }
-        }
+        new AsyncLoad(bmp).execute();
         setPic(operation, im);
     }
 
@@ -193,8 +176,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openImageChooser(View view) {
-        load = ProgressDialog.show(MainActivity.this, "", "loading");
-        load.setCancelable(true);
         Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(i, RESULT_LOAD_IMAGE);
     }
@@ -204,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+
             Uri selectedImage = data.getData();
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
@@ -255,7 +237,6 @@ public class MainActivity extends AppCompatActivity {
             im.setLayoutParams(params);*/
 
         Log.i("Test", "done");
-        load.cancel();
         return scaledBitmap;
     }
 
@@ -288,5 +269,46 @@ public class MainActivity extends AppCompatActivity {
         String mImageName="MI_"+timeStamp+".jpg";
         mediaFile=new File(mediaStorageDir.getPath()+File.separator+mImageName);
         return mediaFile;
+    }
+
+    private class AsyncLoad extends AsyncTask<Bitmap,Void,Bitmap>{
+        private Bitmap bitmap;
+
+        public AsyncLoad(Bitmap bmp){
+            this.bitmap=bmp;
+        }
+
+        @Override
+        protected Bitmap doInBackground(Bitmap... bitmaps) {
+            operation = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+            double red = 0.2989;
+            double green = 0.587;
+            double blue = 0.114;
+
+            for (int i = 0; i < bitmap.getWidth(); i++) {
+                for (int j = 0; j < bitmap.getHeight(); j++) {
+                    int p = bitmap.getPixel(i, j);
+                    int r = Color.red(p);
+                    int g = Color.green(p);
+                    int b = Color.blue(p);
+                    int x = (int) (red * r + green * g + blue * b);
+                    operation.setPixel(i, j, Color.argb(Color.alpha(p), x, x, x));
+                }
+            }
+            return operation;
+        }
+
+        @Override
+        protected void onPreExecute(){
+            load = ProgressDialog.show(MainActivity.this, "", "loading");
+            load.setCancelable(true);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            operation=bitmap;
+            load.cancel();
+        }
     }
 }
